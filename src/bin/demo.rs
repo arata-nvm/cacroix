@@ -1,6 +1,6 @@
 use cacroix::{
     joint::{spring::SpringJoint, Joint},
-    particle::{Material, Particle},
+    particle::{self, Material, Particle},
     world::World,
 };
 use glutin_window::GlutinWindow as Window;
@@ -140,6 +140,7 @@ fn new_square(world: &mut World<Box<dyn Joint>>) {
         )),
     ];
 
+    p[0].borrow_mut().typ = particle::Type::Static;
     for i1 in 0..p.len() {
         for i2 in (i1 + 1)..p.len() {
             world.add_joint(Box::new(SpringJoint::new(&p[i1], &p[i2], size, 0.75)));
