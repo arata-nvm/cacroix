@@ -1,6 +1,11 @@
+use std::{cell::RefCell, rc::Rc};
+
 use vecmath::Vector2;
 
-use crate::particle::Particle;
+use crate::{
+    particle::Particle,
+    spring::{self, Spring},
+};
 
 #[derive(Debug)]
 pub struct World {
@@ -8,7 +13,8 @@ pub struct World {
     pub height: usize,
     pub gravity: Vector2<f64>,
 
-    pub particles: Vec<Particle>,
+    pub particles: Vec<Rc<RefCell<Particle>>>,
+    pub springs: Vec<Spring>,
 }
 
 impl World {
@@ -19,22 +25,35 @@ impl World {
             gravity,
 
             particles: Vec::new(),
+            springs: Vec::new(),
         }
     }
 
-    pub fn add_particle(&mut self, p: Particle) {
-        self.particles.push(p);
+    pub fn add_particle(&mut self, p: Particle) -> Rc<RefCell<Particle>> {
+        let p = Rc::new(RefCell::new(p));
+        self.particles.push(Rc::clone(&p));
+        Rc::clone(&p)
+    }
+
+    pub fn add_spring(&mut self, s: Spring) {
+        self.springs.push(s);
     }
 
     pub fn update(&mut self) {
         for i1 in 0..self.particles.len() {
-            self.particles[i1].accelerate(self.gravity);
-            self.particles[i1].move_();
-            self.particles[i1].bounce(self.width, self.height);
+            let p1 = &mut self.particles[i1].borrow_mut();
+            p1.accelerate(self.gravity);
+            p1.move_();
+            p1.bounce(self.width, self.height);
+
             for i2 in (i1 + 1)..self.particles.len() {
-                let (a, b) = self.particles.split_at_mut(i2);
-                Self::collide(&mut a[i1], &mut b[0]);
+                let p2 = &mut self.particles[i2].borrow_mut();
+                Self::collide(p1, p2);
             }
+        }
+
+        for s in self.springs.iter_mut() {
+            s.update();
         }
     }
 
