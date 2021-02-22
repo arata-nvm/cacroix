@@ -2,6 +2,7 @@ use vecmath::Vector2;
 
 #[derive(Debug)]
 pub struct Particle {
+    pub acceleration: Vector2<f64>,
     pub velocity: Vector2<f64>,
     pub position: Vector2<f64>,
 
@@ -22,6 +23,7 @@ pub struct Material {
 impl Particle {
     pub fn new(position: Vector2<f64>, size: f64, mass: f64, material: Material) -> Self {
         Self {
+            acceleration: [0.0, 0.0],
             velocity: [0.0, 0.0],
             position,
             size,
@@ -31,7 +33,7 @@ impl Particle {
     }
 
     pub fn accelerate(&mut self, v: Vector2<f64>) {
-        self.velocity = vecmath::vec2_add(self.velocity, v);
+        self.acceleration = vecmath::vec2_add(self.acceleration, v);
     }
 
     pub fn bounce(&mut self, width: usize, height: usize) {
@@ -64,8 +66,14 @@ impl Particle {
         }
     }
 
-    pub fn move_(&mut self) {
-        self.position = vecmath::vec2_add(self.position, self.velocity);
-        self.velocity = vecmath::vec2_scale(self.velocity, self.material.linear_damping);
+    pub fn update_velocity(&mut self, dt: f64) {
+        let acceleration = vecmath::vec2_scale(self.acceleration, dt);
+        self.velocity = vecmath::vec2_add(self.velocity, acceleration);
+    }
+
+    pub fn update_position(&mut self, dt: f64) {
+        let velocity = vecmath::vec2_scale(self.velocity, dt);
+        self.position = vecmath::vec2_add(self.position, velocity);
+        self.acceleration = [0.0, 0.0];
     }
 }

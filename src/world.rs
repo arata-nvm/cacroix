@@ -2,10 +2,7 @@ use std::{cell::RefCell, rc::Rc};
 
 use vecmath::Vector2;
 
-use crate::{
-    particle::Particle,
-    spring::{self, Spring},
-};
+use crate::{particle::Particle, spring::Spring};
 
 #[derive(Debug)]
 pub struct World {
@@ -39,14 +36,16 @@ impl World {
         self.springs.push(s);
     }
 
-    pub fn update(&mut self) {
-        for i1 in 0..self.particles.len() {
-            let p1 = &mut self.particles[i1].borrow_mut();
-            p1.accelerate(self.gravity);
-            p1.move_();
-            p1.bounce(self.width, self.height);
+    pub fn update(&mut self, dt: f64) {
+        for p in self.particles.iter_mut() {
+            let mut p = p.borrow_mut();
+            p.accelerate(self.gravity);
+            p.update_velocity(dt);
+        }
 
+        for i1 in 0..self.particles.len() {
             for i2 in (i1 + 1)..self.particles.len() {
+                let p1 = &mut self.particles[i1].borrow_mut();
                 let p2 = &mut self.particles[i2].borrow_mut();
                 Self::collide(p1, p2);
             }
@@ -54,6 +53,12 @@ impl World {
 
         for s in self.springs.iter_mut() {
             s.update();
+        }
+
+        for p in self.particles.iter_mut() {
+            let mut p = p.borrow_mut();
+            p.update_position(dt);
+            p.bounce(self.width, self.height);
         }
     }
 
