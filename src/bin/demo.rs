@@ -73,7 +73,7 @@ fn main() {
 
 fn init_world() -> World {
     let gravity = [0.0, 0.02];
-    let size = 1.0;
+    let size = 2.0;
     let m = Material {
         linear_damping: 0.999,
         restitution: 0.75,
@@ -81,14 +81,14 @@ fn init_world() -> World {
 
     let mut world = World::new(100, 100, gravity);
 
-    let mut p1 = Particle::new(50.0, 50.0, size, m);
-    p1.accelerate([-0.1, 0.0]);
+    let mut p1 = Particle::new(50.0, 50.0, size, 200.0, m);
+    p1.accelerate([-0.1, 0.5]);
 
-    let mut p2 = Particle::new(50.0, 10.0, size, m);
-    p2.accelerate([0.2, 0.0]);
+    let mut p2 = Particle::new(50.0, 10.0, size, 100.0, m);
+    p2.accelerate([0.2, 0.5]);
 
-    let mut p3 = Particle::new(25.0, 80.0, size, m);
-    p3.accelerate([0.1, 0.0]);
+    let mut p3 = Particle::new(25.0, 80.0, size, 200.0, m);
+    p3.accelerate([0.1, 0.5]);
 
     world.add_particle(p1);
     world.add_particle(p2);

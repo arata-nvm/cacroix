@@ -44,14 +44,19 @@ impl World {
         let distance = dx.hypot(dy);
 
         if distance < p1.size + p2.size {
-            let normal = vecmath::vec2_normalized_sub(p1.position, p2.position);
-            let scale1 = vecmath::vec2_dot(vecmath::vec2_sub(p1.velocity, p2.velocity), normal);
-            let scale2 = vecmath::vec2_dot(vecmath::vec2_sub(p2.velocity, p1.velocity), normal);
+            let n = vecmath::vec2_normalized_sub(p1.position, p2.position);
 
-            p1.velocity = vecmath::vec2_scale(normal, scale1 * p1.material.restitution);
-            p2.velocity = vecmath::vec2_scale(normal, scale2 * p2.material.restitution);
+            let d1 = vecmath::vec2_dot(vecmath::vec2_sub(p2.velocity, p1.velocity), n) * 2.0;
+            let d2 = -d1;
 
-            println!("collided!");
+            let r1 = p1.mass / (p1.mass + p2.mass);
+            let r2 = p2.mass / (p1.mass + p2.mass);
+
+            let s1 = d1 * r1 * p1.material.restitution;
+            let s2 = d2 * r2 * p2.material.restitution;
+
+            p1.velocity = vecmath::vec2_add(vecmath::vec2_scale(n, s1), p1.velocity);
+            p2.velocity = vecmath::vec2_add(vecmath::vec2_scale(n, s2), p2.velocity);
         }
     }
 }

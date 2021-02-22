@@ -6,6 +6,7 @@ pub struct Particle {
     pub position: Vector2<f64>,
 
     pub size: f64,
+    pub mass: f64,
     pub material: Material,
 }
 
@@ -19,11 +20,12 @@ pub struct Material {
 }
 
 impl Particle {
-    pub fn new(x: f64, y: f64, size: f64, material: Material) -> Self {
+    pub fn new(x: f64, y: f64, size: f64, mass: f64, material: Material) -> Self {
         Self {
             velocity: [0.0, 0.0],
             position: [x, y],
             size,
+            mass,
             material,
         }
     }
