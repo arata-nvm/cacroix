@@ -64,8 +64,8 @@ impl App {
         });
     }
 
-    fn update(&mut self, _args: &UpdateArgs) {
-        self.world.update();
+    fn update(&mut self, args: &UpdateArgs) {
+        self.world.update(args.dt);
     }
 }
 
@@ -83,7 +83,11 @@ fn main() {
         world: init_world(),
     };
 
-    let mut events = Events::new(EventSettings::new());
+    let settings = EventSettings {
+        max_fps: 60,
+        ..EventSettings::default()
+    };
+    let mut events = Events::new(settings);
     while let Some(e) = events.next(&mut window) {
         if let Some(args) = e.render_args() {
             app.render(&args);
@@ -96,7 +100,7 @@ fn main() {
 }
 
 fn init_world() -> World {
-    let gravity = [0.0, 0.02];
+    let gravity = [0.0, 9.8];
     let mut world = World::new(100, 100, gravity);
     new_square(&mut world);
     return world;

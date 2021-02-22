@@ -66,12 +66,14 @@ impl Particle {
         }
     }
 
-    pub fn update_velocity(&mut self) {
-        self.velocity = vecmath::vec2_add(self.velocity, self.acceleration);
+    pub fn update_velocity(&mut self, dt: f64) {
+        let acceleration = vecmath::vec2_scale(self.acceleration, dt);
+        self.velocity = vecmath::vec2_add(self.velocity, acceleration);
     }
 
-    pub fn update_position(&mut self) {
-        self.position = vecmath::vec2_add(self.position, self.velocity);
+    pub fn update_position(&mut self, dt: f64) {
+        let velocity = vecmath::vec2_scale(self.velocity, dt);
+        self.position = vecmath::vec2_add(self.position, velocity);
         self.acceleration = [0.0, 0.0];
     }
 }

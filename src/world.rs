@@ -36,11 +36,11 @@ impl World {
         self.springs.push(s);
     }
 
-    pub fn update(&mut self) {
+    pub fn update(&mut self, dt: f64) {
         for p in self.particles.iter_mut() {
             let mut p = p.borrow_mut();
             p.accelerate(self.gravity);
-            p.update_velocity();
+            p.update_velocity(dt);
         }
 
         for i1 in 0..self.particles.len() {
@@ -57,7 +57,7 @@ impl World {
 
         for p in self.particles.iter_mut() {
             let mut p = p.borrow_mut();
-            p.update_position();
+            p.update_position(dt);
             p.bounce(self.width, self.height);
         }
     }
