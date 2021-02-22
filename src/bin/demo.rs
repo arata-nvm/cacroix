@@ -1,6 +1,6 @@
 use cacroix::{
+    joint::{spring::SpringJoint, Joint},
     particle::{Material, Particle},
-    spring::Spring,
     world::World,
 };
 use glutin_window::GlutinWindow as Window;
@@ -11,7 +11,7 @@ use piston::window::WindowSettings;
 
 pub struct App {
     gl: GlGraphics,
-    world: World,
+    world: World<Box<dyn Joint>>,
 }
 
 impl App {
@@ -35,11 +35,14 @@ impl App {
 
         let lines: Vec<types::Line> = self
             .world
-            .springs
+            .joints
             .iter()
             .map(|s| {
-                let p1 = s.p1.borrow();
-                let p2 = s.p2.borrow();
+                let p1 = s.particle1();
+                let p1 = p1.borrow();
+
+                let p2 = s.particle2();
+                let p2 = p2.borrow();
                 [
                     p1.position[0],
                     p1.position[1],
@@ -99,14 +102,14 @@ fn main() {
     }
 }
 
-fn init_world() -> World {
+fn init_world() -> World<Box<dyn Joint>> {
     let gravity = [0.0, 9.8];
     let mut world = World::new(100, 100, gravity);
     new_square(&mut world);
     return world;
 }
 
-fn new_square(world: &mut World) {
+fn new_square(world: &mut World<Box<dyn Joint>>) {
     let m = Material {
         linear_damping: 0.999,
         restitution: 0.75,
@@ -139,7 +142,7 @@ fn new_square(world: &mut World) {
 
     for i1 in 0..p.len() {
         for i2 in (i1 + 1)..p.len() {
-            world.add_spring(Spring::new(&p[i1], &p[i2], size, 0.75));
+            world.add_joint(Box::new(SpringJoint::new(&p[i1], &p[i2], size, 0.75)));
         }
     }
 }

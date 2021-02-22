@@ -2,15 +2,17 @@ use std::{cell::RefCell, rc::Rc};
 
 use crate::particle::Particle;
 
+use super::Joint;
+
 #[derive(Debug)]
-pub struct Spring {
+pub struct SpringJoint {
     pub p1: Rc<RefCell<Particle>>,
     pub p2: Rc<RefCell<Particle>>,
     pub length: f64,
     pub strength: f64,
 }
 
-impl Spring {
+impl SpringJoint {
     pub fn new(
         p1: &Rc<RefCell<Particle>>,
         p2: &Rc<RefCell<Particle>>,
@@ -24,8 +26,10 @@ impl Spring {
             strength,
         }
     }
+}
 
-    pub fn update(&mut self) {
+impl Joint for SpringJoint {
+    fn update(&mut self) {
         let mut p1 = self.p1.borrow_mut();
         let mut p2 = self.p2.borrow_mut();
 
@@ -39,5 +43,13 @@ impl Spring {
         let dn = vecmath::vec2_normalized(d);
         p1.accelerate(vecmath::vec2_scale(dn, f1));
         p2.accelerate(vecmath::vec2_scale(dn, -f2));
+    }
+
+    fn particle1(&self) -> Rc<RefCell<Particle>> {
+        Rc::clone(&self.p1)
+    }
+
+    fn particle2(&self) -> Rc<RefCell<Particle>> {
+        Rc::clone(&self.p2)
     }
 }
