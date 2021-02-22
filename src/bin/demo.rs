@@ -1,5 +1,6 @@
 use cacroix::{
     particle::{Material, Particle},
+    spring::Spring,
     world::World,
 };
 use glutin_window::GlutinWindow as Window;
@@ -26,7 +27,26 @@ impl App {
             .world
             .particles
             .iter()
-            .map(|p| rectangle::centered_square(p.position[0], p.position[1], p.size))
+            .map(|p| {
+                let p = p.borrow();
+                rectangle::centered_square(p.position[0], p.position[1], p.size)
+            })
+            .collect();
+
+        let lines: Vec<types::Line> = self
+            .world
+            .springs
+            .iter()
+            .map(|s| {
+                let p1 = s.p1.borrow();
+                let p2 = s.p2.borrow();
+                [
+                    p1.position[0],
+                    p1.position[1],
+                    p2.position[0],
+                    p2.position[1],
+                ]
+            })
             .collect();
 
         self.gl.draw(args.viewport(), |c, gl| {
@@ -34,8 +54,12 @@ impl App {
 
             let trans = c.transform.scale(scale, scale);
 
-            for rect in rects {
-                ellipse(RED, rect, trans, gl);
+            for r in rects {
+                ellipse(RED, r, trans, gl);
+            }
+
+            for l in lines {
+                line(RED, 0.3, l, trans, gl);
             }
         });
     }
@@ -73,26 +97,45 @@ fn main() {
 
 fn init_world() -> World {
     let gravity = [0.0, 0.02];
-    let size = 2.0;
+    let mut world = World::new(100, 100, gravity);
+    new_square(&mut world);
+    return world;
+}
+
+fn new_square(world: &mut World) {
     let m = Material {
         linear_damping: 0.999,
         restitution: 0.75,
     };
 
-    let mut world = World::new(100, 100, gravity);
+    let base = [10.0, 10.0];
+    let size = 50.0;
 
-    let mut p1 = Particle::new(50.0, 50.0, size, 200.0, m);
-    p1.accelerate([-0.1, 0.5]);
+    let p = vec![
+        world.add_particle(Particle::new(base, 1.0, 200.0, m)),
+        world.add_particle(Particle::new(
+            vecmath::vec2_add(base, [size, 0.0]),
+            1.0,
+            200.0,
+            m,
+        )),
+        world.add_particle(Particle::new(
+            vecmath::vec2_add(base, [size, size]),
+            1.0,
+            200.0,
+            m,
+        )),
+        world.add_particle(Particle::new(
+            vecmath::vec2_add(base, [size, size]),
+            1.0,
+            200.0,
+            m,
+        )),
+    ];
 
-    let mut p2 = Particle::new(50.0, 10.0, size, 100.0, m);
-    p2.accelerate([0.2, 0.5]);
-
-    let mut p3 = Particle::new(25.0, 80.0, size, 200.0, m);
-    p3.accelerate([0.1, 0.5]);
-
-    world.add_particle(p1);
-    world.add_particle(p2);
-    world.add_particle(p3);
-
-    return world;
+    for i1 in 0..p.len() {
+        for i2 in (i1 + 1)..p.len() {
+            world.add_spring(Spring::new(&p[i1], &p[i2], size, 0.75));
+        }
+    }
 }
