@@ -2,6 +2,7 @@ use std::{cell::RefCell, rc::Rc};
 
 use crate::particle::Particle;
 
+pub mod distance;
 pub mod spring;
 
 pub trait Joint {
