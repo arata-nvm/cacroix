@@ -2,19 +2,19 @@ use std::{cell::RefCell, rc::Rc};
 
 use vecmath::Vector2;
 
-use crate::{particle::Particle, spring::Spring};
+use crate::{joint::Joint, particle::Particle};
 
 #[derive(Debug)]
-pub struct World {
+pub struct World<T: Joint> {
     pub width: usize,
     pub height: usize,
     pub gravity: Vector2<f64>,
 
     pub particles: Vec<Rc<RefCell<Particle>>>,
-    pub springs: Vec<Spring>,
+    pub joints: Vec<T>,
 }
 
-impl World {
+impl<T: Joint> World<T> {
     pub fn new(width: usize, height: usize, gravity: Vector2<f64>) -> Self {
         Self {
             width,
@@ -22,7 +22,7 @@ impl World {
             gravity,
 
             particles: Vec::new(),
-            springs: Vec::new(),
+            joints: Vec::new(),
         }
     }
 
@@ -32,8 +32,8 @@ impl World {
         Rc::clone(&p)
     }
 
-    pub fn add_spring(&mut self, s: Spring) {
-        self.springs.push(s);
+    pub fn add_joint(&mut self, j: T) {
+        self.joints.push(j);
     }
 
     pub fn update(&mut self, dt: f64) {
@@ -51,8 +51,8 @@ impl World {
             }
         }
 
-        for s in self.springs.iter_mut() {
-            s.update();
+        for j in self.joints.iter_mut() {
+            j.update();
         }
 
         for p in self.particles.iter_mut() {

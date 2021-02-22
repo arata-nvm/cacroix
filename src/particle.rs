@@ -8,6 +8,7 @@ pub struct Particle {
 
     pub size: f64,
     pub mass: f64,
+    pub typ: Type,
     pub material: Material,
 }
 
@@ -20,6 +21,12 @@ pub struct Material {
     pub linear_damping: f64,
 }
 
+#[derive(Debug, PartialEq, Eq)]
+pub enum Type {
+    Dynamic,
+    Static,
+}
+
 impl Particle {
     pub fn new(position: Vector2<f64>, size: f64, mass: f64, material: Material) -> Self {
         Self {
@@ -28,6 +35,7 @@ impl Particle {
             position,
             size,
             mass,
+            typ: Type::Dynamic,
             material,
         }
     }
@@ -67,11 +75,21 @@ impl Particle {
     }
 
     pub fn update_velocity(&mut self, dt: f64) {
+        if self.typ == Type::Static {
+            self.acceleration = [0.0, 0.0];
+            self.velocity = [0.0, 0.0];
+            return;
+        }
+
         let acceleration = vecmath::vec2_scale(self.acceleration, dt);
         self.velocity = vecmath::vec2_add(self.velocity, acceleration);
     }
 
     pub fn update_position(&mut self, dt: f64) {
+        if self.typ == Type::Static {
+            return;
+        }
+
         let velocity = vecmath::vec2_scale(self.velocity, dt);
         self.position = vecmath::vec2_add(self.position, velocity);
         self.acceleration = [0.0, 0.0];
