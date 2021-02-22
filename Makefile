@@ -2,7 +2,7 @@ build:
 	cargo build
 
 run:
-	cargo run -- ${FILE}
+	cargo run
 
 test:
 	cargo test
