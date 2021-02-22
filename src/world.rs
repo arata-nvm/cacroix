@@ -30,6 +30,7 @@ impl World {
         for p in self.particles.iter_mut() {
             p.accelerate(self.gravity);
             p.move_();
+            p.bounce(self.width, self.height);
         }
     }
 }

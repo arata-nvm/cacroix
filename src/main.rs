@@ -1,5 +1,3 @@
-use std::{cell::RefCell, rc::Rc, thread, time::Duration};
-
 use cacroix::{particle::Particle, world::World};
 
 fn main() {
