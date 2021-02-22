@@ -37,7 +37,7 @@ impl Particle {
 
         // 左面
         if self.position[0] < self.size {
-            self.position[0] = self.size - self.position[0];
+            self.position[0] = 2.0 * self.size - self.position[0];
             self.velocity[0] = -self.velocity[0];
             self.velocity = vecmath::vec2_scale(self.velocity, self.material.restitution);
         }
@@ -50,7 +50,7 @@ impl Particle {
 
         // 上面
         if self.position[1] < self.size {
-            self.position[1] = self.size - self.position[1];
+            self.position[1] = 2.0 * self.size - self.position[1];
             self.velocity[1] = -self.velocity[1];
             self.velocity = vecmath::vec2_scale(self.velocity, self.material.restitution);
         }
