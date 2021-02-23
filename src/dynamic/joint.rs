@@ -3,6 +3,7 @@ use std::{cell::RefCell, rc::Rc};
 use super::particle::Particle;
 
 pub mod distance;
+pub mod mortor;
 pub mod spring;
 
 pub trait Joint {
