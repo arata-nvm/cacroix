@@ -39,12 +39,14 @@ impl<T: Joint> World<T> {
     }
 
     pub fn update(&mut self, dt: f64) {
+        // 速度
         for p in self.particles.iter_mut() {
             let mut p = p.borrow_mut();
             p.accelerate(self.gravity);
             p.update_velocity(dt);
         }
 
+        // 衝突
         for i1 in 0..self.particles.len() {
             for i2 in (i1 + 1)..self.particles.len() {
                 let p1 = &mut self.particles[i1].borrow_mut();
@@ -53,10 +55,12 @@ impl<T: Joint> World<T> {
             }
         }
 
+        // ジョイント
         for j in self.joints.iter_mut() {
             j.update();
         }
 
+        // 位置
         for p in self.particles.iter_mut() {
             let mut p = p.borrow_mut();
             p.update_position(dt);
