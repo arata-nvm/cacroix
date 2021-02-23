@@ -112,7 +112,7 @@ fn main() {
 }
 
 fn init_world() -> DefaultWorld {
-    return init_world4();
+    return init_world2();
 }
 
 fn init_world1() -> DefaultWorld {
@@ -149,7 +149,7 @@ fn init_world2() -> DefaultWorld {
         restitution: 0.1,
     };
 
-    for i in 0..100 {
+    for i in 0..200 {
         world.add_particle(Particle::new(
             [400.0 + 0.1 * i as f64, 100.0 + 50.0 * i as f64],
             10.0,

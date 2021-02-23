@@ -90,7 +90,6 @@ impl Particle {
 
         let cur_len = vecmath::vec2_square_len(self.velocity);
         let max_len = MAX_VELOCITY * MAX_VELOCITY;
-        println!("{}", cur_len);
         if cur_len > max_len {
             self.velocity = vecmath::vec2_scale(self.velocity, max_len / cur_len);
         }
