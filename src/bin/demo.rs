@@ -1,6 +1,6 @@
 use cacroix::{
     joint::Joint,
-    particle::Material,
+    particle::{Material, Particle},
     shape,
     world::{DefaultWorld, World},
 };
@@ -12,7 +12,7 @@ use piston::window::WindowSettings;
 
 pub struct App {
     gl: GlGraphics,
-    world: World<Box<dyn Joint>>,
+    world: DefaultWorld,
 }
 
 impl App {
@@ -81,7 +81,7 @@ fn main() {
 
     let mut app = App {
         gl: GlGraphics::new(opengl),
-        world: init_world(),
+        world: init_world2(),
     };
 
     let mut events = Events::new(EventSettings {
@@ -99,7 +99,7 @@ fn main() {
     }
 }
 
-fn init_world() -> DefaultWorld {
+fn init_world1() -> DefaultWorld {
     let gravity = [0.0, 9.8];
     let mut world = World::new(800, 600, gravity);
 
@@ -120,6 +120,27 @@ fn init_world() -> DefaultWorld {
     shape::new_poly(
         &mut world, center, radius, num, size, mass, material, strength,
     );
+
+    return world;
+}
+
+fn init_world2() -> DefaultWorld {
+    let gravity = [0.0, 9.8];
+    let mut world = World::new(800, 600, gravity);
+
+    let m = Material {
+        linear_damping: 0.999,
+        restitution: 0.1,
+    };
+
+    for i in 0..100 {
+        world.add_particle(Particle::new(
+            [400.0 + 0.1 * i as f64, 100.0 + 50.0 * i as f64],
+            10.0,
+            1.0,
+            m,
+        ));
+    }
 
     return world;
 }
