@@ -39,12 +39,14 @@ impl<T: Joint> World<T> {
     }
 
     pub fn update(&mut self, dt: f64) {
+        // 速度
         for p in self.particles.iter_mut() {
             let mut p = p.borrow_mut();
             p.accelerate(self.gravity);
             p.update_velocity(dt);
         }
 
+        // 衝突
         for i1 in 0..self.particles.len() {
             for i2 in (i1 + 1)..self.particles.len() {
                 let p1 = &mut self.particles[i1].borrow_mut();
@@ -53,10 +55,12 @@ impl<T: Joint> World<T> {
             }
         }
 
+        // ジョイント
         for j in self.joints.iter_mut() {
             j.update();
         }
 
+        // 位置
         for p in self.particles.iter_mut() {
             let mut p = p.borrow_mut();
             p.update_position(dt);
@@ -65,9 +69,8 @@ impl<T: Joint> World<T> {
     }
 
     pub fn collide(p1: &mut Particle, p2: &mut Particle) {
-        let dx = p1.position[0] - p2.position[0];
-        let dy = p1.position[1] - p2.position[1];
-        let distance = dx.hypot(dy);
+        let dp = vecmath::vec2_sub(p1.position, p2.position);
+        let distance = vecmath::vec2_len(dp);
 
         if distance < p1.size + p2.size {
             let n = vecmath::vec2_normalized_sub(p1.position, p2.position);
@@ -81,8 +84,13 @@ impl<T: Joint> World<T> {
             let s1 = d1 * r1 * p1.material.restitution;
             let s2 = d2 * r2 * p2.material.restitution;
 
-            p1.velocity = vecmath::vec2_add(vecmath::vec2_scale(n, s1), p1.velocity);
-            p2.velocity = vecmath::vec2_add(vecmath::vec2_scale(n, s2), p2.velocity);
+            p1.velocity = vecmath::vec2_add(p1.velocity, vecmath::vec2_scale(n, s1));
+            p2.velocity = vecmath::vec2_add(p2.velocity, vecmath::vec2_scale(n, s2));
+
+            // TODO 1.0の値を調節する(そのまま差を使用するとめり込みを防げないので定数を足している)
+            let overlap = (p1.size + p2.size - distance + 1.0) * 0.5;
+            p1.velocity = vecmath::vec2_add(p1.velocity, vecmath::vec2_scale(n, overlap));
+            p2.velocity = vecmath::vec2_sub(p2.velocity, vecmath::vec2_scale(n, overlap));
         }
     }
 }
