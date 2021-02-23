@@ -2,7 +2,7 @@ use std::{cell::RefCell, rc::Rc};
 
 use vecmath::Vector2;
 
-use crate::{joint::Joint, particle::Particle};
+use super::{joint::Joint, particle::Particle};
 
 pub type DefaultWorld = World<Box<dyn Joint>>;
 

@@ -1,6 +1,6 @@
 use std::{cell::RefCell, rc::Rc};
 
-use crate::particle::Particle;
+use super::particle::Particle;
 
 pub mod distance;
 pub mod spring;

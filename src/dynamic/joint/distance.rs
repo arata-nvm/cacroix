@@ -1,18 +1,18 @@
 use std::{cell::RefCell, rc::Rc};
 
-use crate::particle::Particle;
+use crate::dynamic::particle::Particle;
 
 use super::Joint;
 
 #[derive(Debug)]
-pub struct SpringJoint {
+pub struct DistanceJoint {
     pub p1: Rc<RefCell<Particle>>,
     pub p2: Rc<RefCell<Particle>>,
     pub length: f64,
     pub strength: f64,
 }
 
-impl SpringJoint {
+impl DistanceJoint {
     pub fn new(
         p1: &Rc<RefCell<Particle>>,
         p2: &Rc<RefCell<Particle>>,
@@ -28,21 +28,21 @@ impl SpringJoint {
     }
 }
 
-impl Joint for SpringJoint {
+impl Joint for DistanceJoint {
     fn update(&mut self) {
         let mut p1 = self.p1.borrow_mut();
         let mut p2 = self.p2.borrow_mut();
 
-        let d = vecmath::vec2_sub(p1.position, p2.position);
+        let n = vecmath::vec2_normalized_sub(p2.position, p1.position);
+        let rel_vel = vecmath::vec2_dot(vecmath::vec2_sub(p2.velocity, p1.velocity), n);
 
-        let distance = vecmath::vec2_len(d);
-        let force = (self.length - distance) * self.strength;
-        let f1 = force / p1.mass;
-        let f2 = force / p2.mass;
+        let distance = vecmath::vec2_len(vecmath::vec2_sub(p1.position, p2.position));
+        let diff = distance - self.length;
 
-        let dn = vecmath::vec2_normalized(d);
-        p1.accelerate(vecmath::vec2_scale(dn, f1));
-        p2.accelerate(vecmath::vec2_scale(dn, -f2));
+        let v = vecmath::vec2_scale(n, (rel_vel + diff) * 0.5 * self.strength);
+
+        p1.velocity = vecmath::vec2_add(p1.velocity, v);
+        p2.velocity = vecmath::vec2_sub(p2.velocity, v);
     }
 
     fn particle1(&self) -> Rc<RefCell<Particle>> {

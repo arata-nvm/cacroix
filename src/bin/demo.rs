@@ -1,8 +1,9 @@
 use cacroix::{
-    joint::Joint,
-    particle::{Material, Particle},
-    shape,
-    world::{DefaultWorld, World},
+    common::shape,
+    dynamic::{
+        particle::{Material, Particle},
+        world::{DefaultWorld, World},
+    },
 };
 use glutin_window::GlutinWindow as Window;
 use opengl_graphics::{GlGraphics, OpenGL};
