@@ -42,7 +42,8 @@ impl<T: Joint> World<T> {
         // 速度
         for p in self.particles.iter_mut() {
             let mut p = p.borrow_mut();
-            p.accelerate(self.gravity);
+            let g = vecmath::vec2_scale(self.gravity, p.mass);
+            p.accelerate(g);
             p.update_velocity(dt);
         }
 
