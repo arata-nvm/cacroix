@@ -27,6 +27,8 @@ pub enum Type {
     Static,
 }
 
+pub const MAX_VELOCITY: f64 = 1000.0;
+
 impl Particle {
     pub fn new(position: Vector2<f64>, size: f64, mass: f64, material: Material) -> Self {
         Self {
@@ -84,6 +86,13 @@ impl Particle {
     pub fn update_position(&mut self, dt: f64) {
         if self.typ == Type::Static {
             return;
+        }
+
+        let cur_len = vecmath::vec2_square_len(self.velocity);
+        let max_len = MAX_VELOCITY * MAX_VELOCITY;
+        println!("{}", cur_len);
+        if cur_len > max_len {
+            self.velocity = vecmath::vec2_scale(self.velocity, max_len / cur_len);
         }
 
         let velocity = vecmath::vec2_scale(self.velocity, dt);

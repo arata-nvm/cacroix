@@ -2,7 +2,7 @@ use std::{cell::RefCell, rc::Rc};
 
 use vecmath::Vector2;
 
-use crate::{
+use crate::dynamic::{
     joint::distance::DistanceJoint,
     particle::{Material, Particle},
     world::DefaultWorld,
