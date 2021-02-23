@@ -4,6 +4,8 @@ use vecmath::Vector2;
 
 use crate::{joint::Joint, particle::Particle};
 
+pub type DefaultWorld = World<Box<dyn Joint>>;
+
 #[derive(Debug)]
 pub struct World<T: Joint> {
     pub width: usize,
