@@ -66,7 +66,7 @@ impl App {
     }
 
     fn update(&mut self, args: &UpdateArgs) {
-        self.world.update(args.dt);
+        self.world.update(args.dt * 4.0);
     }
 }
 
