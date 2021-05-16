@@ -1,2 +1,2 @@
-pub mod common;
-pub mod dynamic;
+pub mod physics;
+pub mod vecmath;
