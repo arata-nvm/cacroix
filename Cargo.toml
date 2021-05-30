@@ -8,4 +8,4 @@ edition = "2018"
 
 [dependencies]
 id-arena = "2"
-conrod = { version = "0.55.0", features = ["glium", "winit"] }
+tetra = "0.6"

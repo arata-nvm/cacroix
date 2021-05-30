@@ -35,10 +35,12 @@ impl World {
 
     pub fn step(&mut self, dt: f64) {
         for (_, body) in &mut self.bodies {
-            body.velocity.set_add(self.gravity.mul(dt));
-            body.velocity.set_add(body.force.mul(body.inv_mass).mul(dt));
+            if !body.is_static {
+                body.velocity.set_add(self.gravity.mul(dt));
+                body.velocity.set_add(body.force.mul(body.inv_mass).mul(dt));
 
-            body.angular_velocity += dt * body.inv_i * body.torque;
+                body.angular_velocity += dt * body.inv_i * body.torque;
+            }
         }
 
         let body_ids: Vec<BodyId> = self.bodies.iter().map(|(id, _)| id).collect();
@@ -50,7 +52,7 @@ impl World {
                 if let Some(c) = collision::collide(&self.bodies, b1, b2) {
                     self.contacts
                         .entry(c.key())
-                        .and_modify(|v| *v = c.clone())
+                        .and_modify(|v| *v = v.merge(c.clone()))
                         .or_insert(c);
                 } else {
                     self.contacts.remove(&ContactKey(b1, b2));
@@ -69,11 +71,46 @@ impl World {
         }
 
         for (_, body) in &mut self.bodies {
-            body.position.set_add(body.velocity.mul(dt));
-            body.rotation += body.angular_velocity * dt;
+            if !body.is_static {
+                body.position.set_add(body.velocity.mul(dt));
+                body.rotation += body.angular_velocity * dt;
 
-            body.force.set_zero();
-            body.torque = 0.0;
+                body.force.set_zero();
+                body.torque = 0.0;
+            }
+        }
+
+        for _ in 0..self.iterations {
+            for c in &mut self.contacts.values_mut() {
+                c.apply_position_impulse(&mut self.bodies);
+            }
+        }
+        self.loop_edge();
+    }
+
+    pub fn loop_edge(&mut self) {
+        let size = 800.0;
+        for (_, b) in &mut self.bodies {
+            if b.position[0] <= 0.0 {
+                b.position[0] = size - 1.0;
+            }
+            if b.position[1] <= 0.0 {
+                b.position[1] = size - 1.0;
+            }
+
+            if b.position[0] >= size {
+                b.position[0] = 0.0;
+            }
+            if b.position[1] >= size {
+                b.position[1] = 0.0;
+            }
+        }
+    }
+
+    pub fn dump(&self) {
+        println!("\n--- dump ---");
+        for (_, body) in &self.bodies {
+            println!("{:?}", body);
         }
     }
 }

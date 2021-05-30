@@ -70,19 +70,31 @@ impl Vector2 {
     }
 
     pub fn len(&self) -> f64 {
-        f64::sqrt(self[0] * self[0] + self[1] + self[1])
+        f64::sqrt(self[0] * self[0] + self[1] * self[1])
     }
 
     pub fn len_sq(&self) -> f64 {
-        self[0] * self[0] + self[1] + self[1]
+        self[0] * self[0] + self[1] * self[1]
     }
 
     pub fn normalized(&self) -> Self {
-        (*self).div(self.len())
+        self.div(self.len())
     }
 
     pub fn neg(&self) -> Self {
         Self::new(-self[0], -self[1])
+    }
+
+    pub fn rot(&self, r: f64) -> Self {
+        let c = f64::cos(r);
+        let s = f64::sin(r);
+        Self::new(c * self[0] - s * self[1], s * self[0] + c * self[1])
+    }
+
+    pub fn rot_rev(&self, r: f64) -> Self {
+        let c = f64::cos(r);
+        let s = f64::sin(r);
+        Self::new(c * self[0] + s * self[1], -s * self[0] + c * self[1])
     }
 }
 
