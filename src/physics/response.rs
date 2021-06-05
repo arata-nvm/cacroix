@@ -2,6 +2,7 @@ use crate::vecmath::vector2::{self, Vector2};
 
 use super::body::Body;
 
+// 2物体の相対速度を計算する
 pub fn relative_velocty(b1: &Body, b2: &Body, point: Vector2) -> Vector2 {
     let mut relative_velocity = b1.velocity.sub(b2.velocity);
     relative_velocity.set_add(vector2::crossf(point.sub(b1.position), b1.angular_velocity));
@@ -9,6 +10,7 @@ pub fn relative_velocty(b1: &Body, b2: &Body, point: Vector2) -> Vector2 {
     relative_velocity
 }
 
+// 法線方向の撃力を計算する
 pub fn mass_normal(b1: &Body, b2: &Body, point: Vector2, normal: Vector2) -> f64 {
     let r1 = point.sub(b1.position);
     let r2 = point.sub(b2.position);
@@ -20,6 +22,7 @@ pub fn mass_normal(b1: &Body, b2: &Body, point: Vector2, normal: Vector2) -> f64
             + (b2.inv_i * (vector2::dot(r2, r2) - rn2 * rn2)));
 }
 
+// 接線方向の撃力を計算する
 pub fn mass_tangent(b1: &Body, b2: &Body, point: Vector2, normal: Vector2) -> f64 {
     let r1 = point.sub(b1.position);
     let r2 = point.sub(b2.position);

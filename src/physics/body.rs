@@ -6,25 +6,37 @@ pub type BodyId = Id<Body>;
 
 #[derive(Debug, Default)]
 pub struct Body {
+    // 位置
     pub position: Vector2,
+    // 速度
     pub velocity: Vector2,
+    // 力
     pub force: Vector2,
 
+    // 回転
     pub rotation: f64,
+    // 角速度
     pub angular_velocity: f64,
+    // トルク
     pub torque: f64,
 
+    // 総質量
     pub mass: f64,
     pub inv_mass: f64,
 
+    // 慣性モーメント
     pub i: f64,
     pub inv_i: f64,
 
+    // 摩擦係数
     pub friction: f64,
+    // 反発係数
     pub restitution: f64,
 
+    // 半径
     pub radius: f64,
 
+    // 静的ボディかどうか
     pub is_static: bool,
 }
 

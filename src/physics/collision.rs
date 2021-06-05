@@ -21,8 +21,6 @@ pub fn collide(bodies: &Arena<Body>, b1_id: BodyId, b2_id: BodyId) -> Option<Con
     c.point = b1.position.add(diff_norm.mul(b1.radius));
     c.normal = diff_norm.neg();
     c.tangent = vector2::crossf(c.normal, 1.0);
-    c.friction = f64::sqrt(b1.friction * b2.friction);
-    c.restitution = f64::sqrt(b1.restitution * b2.restitution);
     c.overlap = (b1.radius + b2.radius) - diff.len();
     Some(c)
 }

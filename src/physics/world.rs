@@ -33,7 +33,9 @@ impl World {
         self.bodies.alloc(body);
     }
 
+    // 時間を進める
     pub fn step(&mut self, dt: f64) {
+        // 加速度を反映する
         for (_, body) in &mut self.bodies {
             if !body.is_static {
                 body.velocity.set_add(self.gravity.mul(dt));
@@ -43,6 +45,7 @@ impl World {
             }
         }
 
+        // 衝突を検出する
         let body_ids: Vec<BodyId> = self.bodies.iter().map(|(id, _)| id).collect();
         for i in 0..self.bodies.len() {
             for j in 0..i {
@@ -60,16 +63,19 @@ impl World {
             }
         }
 
+        // 拘束の準備
         for c in &mut self.contacts.values_mut() {
-            c.pre_step(&self.bodies);
+            c.pre_step(&mut self.bodies);
         }
 
+        // 拘束を解決する
         for _ in 0..self.iterations {
             for c in &mut self.contacts.values_mut() {
                 c.apply_impulse(&mut self.bodies);
             }
         }
 
+        // 速度を反映する
         for (_, body) in &mut self.bodies {
             if !body.is_static {
                 body.position.set_add(body.velocity.mul(dt));
@@ -80,11 +86,14 @@ impl World {
             }
         }
 
+        // めり込みを修正する
         for _ in 0..self.iterations {
             for c in &mut self.contacts.values_mut() {
                 c.apply_position_impulse(&mut self.bodies);
             }
         }
+
+        //
         self.loop_edge();
     }
 
@@ -104,13 +113,6 @@ impl World {
             if b.position[1] >= size {
                 b.position[1] = 0.0;
             }
-        }
-    }
-
-    pub fn dump(&self) {
-        println!("\n--- dump ---");
-        for (_, body) in &self.bodies {
-            println!("{:?}", body);
         }
     }
 }

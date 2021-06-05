@@ -34,14 +34,16 @@ fn new_world() -> World {
 
     for i in 0..10 {
         let mut b = Body::new(20.0, 1.0, 0.2, 0.2);
-        b.position.set(400.001, 20.0 + 50.0 * i as f64);
+        b.position.set(400.0, 20.0 + 50.0 * i as f64);
         b.velocity.set(0.0, 0.0);
+        b.restitution = 0.2;
         world.add(b);
     }
 
     let mut b2 = Body::new(50.0, 1.0, 0.2, 0.2);
     b2.position.set(400.0, 700.0);
     b2.velocity.set(0.0, 00.0);
+    b2.restitution = 0.2;
     b2.set_static();
     world.add(b2);
 
